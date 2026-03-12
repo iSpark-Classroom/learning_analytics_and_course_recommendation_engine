@@ -83,6 +83,7 @@ CREATE TABLE course_reviews (
     UNIQUE (user_id, course_id)
 	);
 
+-- Recommend course tables
 
 CREATE recommend_courses(p_user_id INT)
 RETURNS TABLE(course_id INT, title TEXT, category TEXT, score FLOAT)
