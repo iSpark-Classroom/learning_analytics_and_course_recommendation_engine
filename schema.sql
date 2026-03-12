@@ -5,15 +5,17 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ  DEFAULT NOW()
 );
-
 --Categories tables
+
+
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
-`z`)
-
+);
 -- Courses table
+
+
 CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -23,13 +25,14 @@ CREATE TABLE courses (
     is_active BOOLEAN  DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-   
+    CONSTRAINT fk_courses_category
         FOREIGN KEY (category_id)
         REFERENCES categories(id)
      
 );
-
 -- Enrollment table
+
+
 CREATE TABLE enrollments (
     user_id INT NOT NULL,
     course_id INT NOT NULL,
@@ -40,7 +43,7 @@ CREATE TABLE enrollments (
 
     
         FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(id),
    
 
         FOREIGN KEY (course_id)
@@ -49,23 +52,25 @@ CREATE TABLE enrollments (
 );
 
 -- Activity logs table 
+
+
 CREATE TABLE activity_logs (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     course_id INT NOT NULL,
-    activity_type VARCHAR(50) NOT NULL CHECK (
+    activity_type VARCHAR(50) NOT NULL,
         
 
         FOREIGN KEY (user_id)
-        REFERENCES users(id)
+        REFERENCES users(id),
  
         FOREIGN KEY (course_id)
         REFERENCES courses(id)
         ON DELETE CASCADE
 );
-
-
 -- Course review table 
+
+
 CREATE TABLE course_reviews (
     id SERIAL PRIMARY KEY,
     user_id INT,
@@ -83,9 +88,14 @@ CREATE TABLE course_reviews (
     UNIQUE (user_id, course_id)
 	);
 
--- Recommend course tables
 
-CREATE recommend_courses(p_user_id INT)
+
+
+
+-- Recommed courses
+
+ 
+CREATE OR REPLACE FUNCTION  recommend_courses(p_user_id INT)
 RETURNS TABLE(course_id INT, title TEXT, category TEXT, score FLOAT)
 AS $$
 BEGIN
@@ -124,4 +134,11 @@ BEGIN
     ORDER BY score DESC
     LIMIT 5;
 END;
+$$ LANGUAGE plpgsql
+
+
+
+
+
+
 
